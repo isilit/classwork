@@ -53,6 +53,60 @@ Item* addItem(Item* inv, int& count, const char* name, const char* type, int lev
     return newInv;
 }
 
+// Удаление предмета по названию
+Item* removeItem(Item* inv, int& count, const char* name) {
+    if (inv == nullptr || count == 0) {
+        std::cout << "Инвентарь пуст!\n";
+        return inv;
+    }
+    
+    // Ищем предмет для удаления
+    int indexToRemove = -1;
+    for (int i = 0; i < count; i++) {
+        if (strcmp(inv[i].name, name) == 0) {
+            indexToRemove = i;
+            break;
+        }
+    }
+    
+    if (indexToRemove == -1) {
+        std::cout << "Предмет '" << name << "' не найден!\n";
+        return inv;
+    }
+    
+    // Если остался один элемент
+    if (count == 1) {
+        freeItem(inv[0]);
+        delete[] inv;
+        count = 0;
+        std::cout << "Предмет '" << name << "' удален. Инвентарь пуст.\n";
+        return nullptr;
+    }
+    
+    // Создаем новый массив без удаляемого элемента
+    Item* newInv = new Item[count - 1];
+    
+    // Копируем элементы до удаляемого
+    for (int i = 0; i < indexToRemove; i++) {
+        newInv[i] = inv[i];
+    }
+    
+    // Копируем элементы после удаляемого
+    for (int i = indexToRemove + 1; i < count; i++) {
+        newInv[i - 1] = inv[i];
+    }
+    
+    // Освобождаем память удаляемого элемента
+    freeItem(inv[indexToRemove]);
+    
+    // Удаляем старый массив
+    delete[] inv;
+    
+    count--;
+    std::cout << "Предмет '" << name << "' удален.\n";
+    return newInv;
+}
+
 // Освобождение памяти всего инвентаря
 void freeInventory(Item* inv, int count) {
     if (inv != nullptr) {
@@ -69,14 +123,19 @@ int main() {
     
     std::cout << "=== СИСТЕМА УПРАВЛЕНИЯ ИНВЕНТАРЕМ ===\n";
     
-    // Тестируем добавление предметов
+    // Тестируем добавление и удаление предметов
     inventory = addItem(inventory, itemCount, "Меч дракона", "оружие", 15);
-    std::cout << "Добавлен предмет: Меч дракона\n";
-    
     inventory = addItem(inventory, itemCount, "Кожаный доспех", "броня", 5);
-    std::cout << "Добавлен предмет: Кожаный доспех\n";
+    inventory = addItem(inventory, itemCount, "Зелье здоровья", "зелье", 3);
     
-    std::cout << "Всего предметов в инвентаре: " << itemCount << "\n";
+    std::cout << "Добавлено предметов: " << itemCount << "\n";
+    
+    // Удаляем предмет
+    inventory = removeItem(inventory, itemCount, "Кожаный доспех");
+    std::cout << "Осталось предметов: " << itemCount << "\n";
+    
+    // Пытаемся удалить несуществующий предмет
+    inventory = removeItem(inventory, itemCount, "Несуществующий предмет");
     
     freeInventory(inventory, itemCount);
     
