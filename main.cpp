@@ -126,6 +126,24 @@ void printInventory(Item* inv, int count) {
     std::cout << "----------------------------------------\n";
 }
 
+// Сортировка по уровню (пузырьковая сортировка)
+void sortByLevel(Item* inv, int count) {
+    if (inv == nullptr || count <= 1) {
+        return;
+    }
+    
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (inv[j].level > inv[j + 1].level) {
+                // Обмен местами
+                Item temp = inv[j];
+                inv[j] = inv[j + 1];
+                inv[j + 1] = temp;
+            }
+        }
+    }
+}
+
 // Освобождение памяти всего инвентаря
 void freeInventory(Item* inv, int count) {
     if (inv != nullptr) {
@@ -142,17 +160,19 @@ int main() {
     
     std::cout << "=== СИСТЕМА УПРАВЛЕНИЯ ИНВЕНТАРЕМ ===\n";
     
-    // Добавляем предметы
+    // Добавляем предметы в разном порядке уровней
     inventory = addItem(inventory, itemCount, "Меч дракона", "оружие", 15);
     inventory = addItem(inventory, itemCount, "Кожаный доспех", "броня", 5);
     inventory = addItem(inventory, itemCount, "Зелье здоровья", "зелье", 3);
     inventory = addItem(inventory, itemCount, "Лук охотника", "оружие", 8);
+    inventory = addItem(inventory, itemCount, "Стальной щит", "броня", 12);
     
-    // Выводим инвентарь
+    std::cout << "Исходный инвентарь:\n";
     printInventory(inventory, itemCount);
     
-    // Удаляем предмет и снова выводим
-    inventory = removeItem(inventory, itemCount, "Кожаный доспех");
+    // Сортируем по уровню
+    std::cout << "\nПосле сортировки по уровню:\n";
+    sortByLevel(inventory, itemCount);
     printInventory(inventory, itemCount);
     
     freeInventory(inventory, itemCount);
