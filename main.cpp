@@ -107,6 +107,25 @@ Item* removeItem(Item* inv, int& count, const char* name) {
     return newInv;
 }
 
+// Вывод инвентаря
+void printInventory(Item* inv, int count) {
+    if (inv == nullptr || count == 0) {
+        std::cout << "Инвентарь пуст!\n";
+        return;
+    }
+    
+    std::cout << "\n=== ИНВЕНТАРЬ ===\n";
+    std::cout << "Всего предметов: " << count << "\n";
+    std::cout << "----------------------------------------\n";
+    
+    for (int i = 0; i < count; i++) {
+        std::cout << (i + 1) << ". " << inv[i].name 
+                  << " | Тип: " << inv[i].type 
+                  << " | Уровень: " << inv[i].level << "\n";
+    }
+    std::cout << "----------------------------------------\n";
+}
+
 // Освобождение памяти всего инвентаря
 void freeInventory(Item* inv, int count) {
     if (inv != nullptr) {
@@ -123,19 +142,18 @@ int main() {
     
     std::cout << "=== СИСТЕМА УПРАВЛЕНИЯ ИНВЕНТАРЕМ ===\n";
     
-    // Тестируем добавление и удаление предметов
+    // Добавляем предметы
     inventory = addItem(inventory, itemCount, "Меч дракона", "оружие", 15);
     inventory = addItem(inventory, itemCount, "Кожаный доспех", "броня", 5);
     inventory = addItem(inventory, itemCount, "Зелье здоровья", "зелье", 3);
+    inventory = addItem(inventory, itemCount, "Лук охотника", "оружие", 8);
     
-    std::cout << "Добавлено предметов: " << itemCount << "\n";
+    // Выводим инвентарь
+    printInventory(inventory, itemCount);
     
-    // Удаляем предмет
+    // Удаляем предмет и снова выводим
     inventory = removeItem(inventory, itemCount, "Кожаный доспех");
-    std::cout << "Осталось предметов: " << itemCount << "\n";
-    
-    // Пытаемся удалить несуществующий предмет
-    inventory = removeItem(inventory, itemCount, "Несуществующий предмет");
+    printInventory(inventory, itemCount);
     
     freeInventory(inventory, itemCount);
     
