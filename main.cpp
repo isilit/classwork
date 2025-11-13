@@ -144,6 +144,40 @@ void sortByLevel(Item* inv, int count) {
     }
 }
 
+// Фильтрация по типу
+Item* filterByType(Item* inv, int count, const char* type, int& resultCount) {
+    if (inv == nullptr || count == 0) {
+        resultCount = 0;
+        return nullptr;
+    }
+    
+    // Сначала подсчитаем количество предметов нужного типа
+    resultCount = 0;
+    for (int i = 0; i < count; i++) {
+        if (strcmp(inv[i].type, type) == 0) {
+            resultCount++;
+        }
+    }
+    
+    if (resultCount == 0) {
+        std::cout << "Предметы типа '" << type << "' не найдены.\n";
+        return nullptr;
+    }
+    
+    // Создаем новый массив для отфильтрованных предметов
+    Item* filtered = new Item[resultCount];
+    int index = 0;
+    
+    for (int i = 0; i < count; i++) {
+        if (strcmp(inv[i].type, type) == 0) {
+            filtered[index] = createItem(inv[i].name, inv[i].type, inv[i].level);
+            index++;
+        }
+    }
+    
+    return filtered;
+}
+
 // Освобождение памяти всего инвентаря
 void freeInventory(Item* inv, int count) {
     if (inv != nullptr) {
@@ -160,21 +194,32 @@ int main() {
     
     std::cout << "=== СИСТЕМА УПРАВЛЕНИЯ ИНВЕНТАРЕМ ===\n";
     
-    // Добавляем предметы в разном порядке уровней
+    // Добавляем предметы разных типов
     inventory = addItem(inventory, itemCount, "Меч дракона", "оружие", 15);
     inventory = addItem(inventory, itemCount, "Кожаный доспех", "броня", 5);
     inventory = addItem(inventory, itemCount, "Зелье здоровья", "зелье", 3);
     inventory = addItem(inventory, itemCount, "Лук охотника", "оружие", 8);
     inventory = addItem(inventory, itemCount, "Стальной щит", "броня", 12);
+    inventory = addItem(inventory, itemCount, "Зелье маны", "зелье", 3);
     
-    std::cout << "Исходный инвентарь:\n";
+    std::cout << "Полный инвентарь:\n";
     printInventory(inventory, itemCount);
     
-    // Сортируем по уровню
-    std::cout << "\nПосле сортировки по уровню:\n";
-    sortByLevel(inventory, itemCount);
-    printInventory(inventory, itemCount);
+    // Фильтруем по типу "оружие"
+    std::cout << "\nФильтрация по типу 'оружие':\n";
+    int weaponCount = 0;
+    Item* weapons = filterByType(inventory, itemCount, "оружие", weaponCount);
+    printInventory(weapons, weaponCount);
     
+    // Фильтруем по типу "зелье"
+    std::cout << "\nФильтрация по типу 'зелье':\n";
+    int potionCount = 0;
+    Item* potions = filterByType(inventory, itemCount, "зелье", potionCount);
+    printInventory(potions, potionCount);
+    
+    // Очищаем память отфильтрованных массивов
+    freeInventory(weapons, weaponCount);
+    freeInventory(potions, potionCount);
     freeInventory(inventory, itemCount);
     
     return 0;
